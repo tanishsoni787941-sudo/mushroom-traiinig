@@ -1,0 +1,23 @@
+name: Upload Files to Cloudflare R2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  upload-to-r2:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Sync files to Cloudflare R2
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          aws s3 sync . s3://${{ secrets.R2_BUCKET_NAME }} \
+            --endpoint-url ${{ secrets.R2_ENDPOINT }} \
+            --exclude ".git/*" \
+            --exclude ".github/*"
+            
